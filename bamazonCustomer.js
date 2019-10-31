@@ -31,14 +31,15 @@ function readItem(){
     connection.query("SELECT * FROM products", function (err, res){
         if (err) throw err;
         var displaytTable = new Table({
-            head: ["Id", "Item", "Department", "Price"],
-            colWidths: [5,20,20,10]
+            head: ["Id", "Item", "Department", "Price", "Quantity"],
+            colWidths: [5,20,20,10,10]
         });
         for (var i = 0; i < res.length; i++){
-            displaytTable.push([res[i].id, res[i].item, res[i].department, res[i].price]);
+            displaytTable.push([res[i].id, res[i].item, res[i].department, res[i].price, res[i].quantity]);
         }
         console.log(displaytTable.toString());
         confirmPurchase();
+        
     })
 }
 
@@ -82,23 +83,36 @@ function buying(){
       var userId = answers.id;
       // var itemQuantity = query.quantity;
       console.log(userQuantity);
-      console.log(userId);
-      console.log(query);
+      //console.log(userId);
+      //console.log(query);
       //console.log(itemQuantity);
       //console.log("You Chose to buy item id " + userID + " want " + userQuantity + "number of this item.");
-      var query = "SELECT id, price, quantity FROM products WHERE ?";
-      connection.query(query, userQuantity, function(err, res){
+      var query = "SELECT id, price, quantity FROM products WHERE id=?";
+      connection.query(query, userId, function(err, res){
           if (err) throw err;
           for(var i = 0; i < res.length; i++){
-              if (userQuantity > itemQuantity){
-                  console.log("Sorry. We are unable to fulfill your request because the quantity exceeds our inventory quantity amount.")
+              if (userQuantity > res[i].quantity){
+                  //console.log("Sorry. We are unable to fulfill your request because the quantity exceeds our inventory quantity amount.")
+                  console.log(res[i].quantity);
+                  console.log(res[i].id);
+                  console.log(res[i].price);
               }else{
-                  var total = userQuantity * res.price;
-                  console.log("Congratulations.  Your total price is " + total);
+                  var total = userQuantity * res[i].price;
+                  console.log("Congratulations.  Your total price is $" + total);
+                  var updateQuery = "UPDATE products SET quantity = ? WHERE id = ?";
+                  var quantity = res[i].quantity;
+                 var data = [{quantity: res[i].quantity - userQuantity
+                  },{ id: res[i].id}];
+                  connection.query(updateQuery, data, function(err, res){
+                      if (err) throw err;
+                      console.log("Inventory quantity has been updated. " + quantity + " are left in stock.");
+                      connection.end();
+                  })
               }
           }
       })
     })
-}
+};
 
 //update inventory
+

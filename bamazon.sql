@@ -1,3 +1,6 @@
+-- delete database if exists
+DROP DATABASE IF EXISTS bamazon_db;
+
 -- create the database
 CREATE DATABASE bamazon_db;
 
