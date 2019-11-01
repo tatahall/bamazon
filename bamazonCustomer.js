@@ -101,18 +101,20 @@ function buying(){
                   console.log("Congratulations.  Your total price is $" + total);
                   var updateQuery = "UPDATE products SET quantity = ? WHERE id = ?";
                   var quantity = res[i].quantity;
-                 var data = [{quantity: res[i].quantity - userQuantity
-                  },{ id: res[i].id}];
+                  var updatedQuantity = quantity - userQuantity;
+                 var data = [{quantity: updatedQuantity},{ id: res[i].id}];
                   connection.query(updateQuery, data, function(err, res){
                       if (err) throw err;
-                      console.log("Inventory quantity has been updated. " + quantity + " are left in stock.");
-                      connection.end();
+                      console.log("Inventory quantity has been updated. " + updatedQuantity + " are left in stock.")
+                     /* connection.query("INSERT INTO products SET quantity = ? WHERE id = ?", data, function(err, res){
+                          if (err) throw err;
+                          console.log("This works.");
+                      })*/       
                   })
               }
+              connection.end();
           }
       })
     })
 };
-
-//update inventory
 
