@@ -56,6 +56,7 @@ function confirmPurchase(){
     .then(answers => {
         if(answers.question === "no"){
             console.log ("Sorry we couldn't help you. We update inventory daily so please check back for the item you want.")
+            readItem();
         }else{
             console.log("Thank you for shopping with us.")
             buying();
@@ -82,7 +83,7 @@ function buying(){
       var userQuantity = answers.quantity;
       var userId = answers.id;
       // var itemQuantity = query.quantity;
-      console.log(userQuantity);
+      //console.log(userQuantity);
       //console.log(userId);
       //console.log(query);
       //console.log(itemQuantity);
@@ -92,10 +93,11 @@ function buying(){
           if (err) throw err;
           for(var i = 0; i < res.length; i++){
               if (userQuantity > res[i].quantity){
-                  //console.log("Sorry. We are unable to fulfill your request because the quantity exceeds our inventory quantity amount.")
-                  console.log(res[i].quantity);
-                  console.log(res[i].id);
-                  console.log(res[i].price);
+                  console.log("Sorry. We are unable to fulfill your request because the quantity " + "(" + userQuantity + ")" + "exceeds our inventory quantity amount" + "(" + res[i].quantity + ")" + ".");
+                  //console.log(res[i].quantity);
+                  //console.log(res[i].id);
+                  //console.log(res[i].price);
+                  readItem();
               }else{
                   var total = userQuantity * res[i].price;
                   console.log("Congratulations.  Your total price is $" + total);
@@ -106,11 +108,13 @@ function buying(){
                   connection.query(updateQuery, data, function(err, res){
                       if (err) throw err;
                       console.log("Inventory quantity has been updated. " + updatedQuantity + " are left in stock.")     
+                      readItem();
                   })
               }
-              connection.end();
+              //connection.end();
           }
       })
     })
 };
 
+//readItem();
